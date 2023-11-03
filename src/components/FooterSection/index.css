@@ -15,7 +15,8 @@
 }
 .contact-icon {
   color: #ffffff;
-  margin: 20px;
+  margin: 10px;
+  margin-bottom: 3px;
   height: 30px;
   height: 30px;
 }
@@ -23,6 +24,20 @@
   font-size: 20px;
   color: #ffffff;
   font-family: 'Roboto';
-  margin-top: 10px;
+  margin-top: 1px;
+  margin-bottom: 7px;
+}
+.contact-number {
+  font-size: 20px;
+  color: #ffffff;
+  font-family: 'Roboto';
+  margin-top: 1px;
   margin-bottom: 64px;
+}
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 6px;
 }

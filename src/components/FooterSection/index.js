@@ -18,7 +18,10 @@ const FooterSection = () => (
         <FaYoutube />
       </li>
     </ul>
-    <p className="contact-text">Contact us</p>
+    <div className="contact-list">
+      <p className="contact-text">Contact us</p>
+      <p className="contact-number">8500960987</p>
+    </div>
   </div>
 )
 

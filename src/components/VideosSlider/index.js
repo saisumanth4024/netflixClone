@@ -7,18 +7,13 @@ import './index.css'
 
 const VideosSlider = props => {
   const settings = {
+    className: 'slider variable-width',
     dots: false,
+    infinite: true,
+    centerMode: true,
+    slidesToShow: 1,
     slidesToScroll: 1,
-    slidesToShow: 4,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+    variableWidth: true,
   }
   const {videoData} = props
 

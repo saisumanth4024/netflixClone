@@ -103,13 +103,13 @@ class PopularSection extends Component {
 
   render() {
     return (
-      <>
+      <div className="popular-bg-container">
         <Header />
         <div className="popular-bg-container">
           {this.renderOutputView()}
           <FooterSection />
         </div>
-      </>
+      </div>
     )
   }
 }

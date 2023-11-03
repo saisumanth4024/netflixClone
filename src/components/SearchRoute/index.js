@@ -21,6 +21,10 @@ class SearchRoute extends Component {
     apiStatus: apiStatusConstants.initial,
   }
 
+  componentDidMount() {
+    this.getSearchApiData()
+  }
+
   getSearchApiData = async () => {
     const {searchInput} = this.state
     this.setState({apiStatus: apiStatusConstants.inProgress})
@@ -139,10 +143,10 @@ class SearchRoute extends Component {
 
   render() {
     return (
-      <>
+      <div className="search-header-container">
         {this.renderHeader()}
         <div className="search-bg-container">{this.renderOutputView()}</div>
-      </>
+      </div>
     )
   }
 }

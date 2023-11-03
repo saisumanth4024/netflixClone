@@ -1,137 +1,155 @@
-import {Component} from 'react'
-import {Link} from 'react-router-dom'
+import {useState, useEffect} from 'react'
+import Cookies from 'js-cookie'
+import {Link, withRouter} from 'react-router-dom'
 import {HiOutlineSearch} from 'react-icons/hi'
-import {AiFillCloseCircle} from 'react-icons/ai'
-import {MdMenuOpen} from 'react-icons/md'
+import {MdOutlineKeyboardArrowDown} from 'react-icons/md'
+// import MenuDropDown from '../MenuDropDown/index'
 import './index.css'
 
-class Header extends Component {
-  state = {showMenu: false, currentPath: ''}
+const Header = props => {
+  const [showMenu, setShowMenu] = useState(false)
+  const [currentPath, setCurrentPath] = useState('')
 
-  componentDidMount() {
-    const path = window.location.pathname
-    this.setState({currentPath: path})
+  useEffect(() => {
+    const paths = window.location.pathname
+    setCurrentPath(paths)
+  }, [])
+
+  const logout = () => {
+    const {history} = props
+    Cookies.remove('jwt_token')
+    history.replace('/login')
   }
 
-  showSearchInput = () => {
-    const {currentPath} = this.state
-    return currentPath === '/search'
-  }
+  const showSearchInput = () => currentPath === '/search'
 
-  onShowSearchInput = () => {
-    const {getSearchApiData} = this.props
-    const showInput = this.showSearchInput()
+  const onShowSearchInput = () => {
+    const {getSearchApiData} = props
+    const showInput = showSearchInput()
     if (showInput) {
       getSearchApiData()
     }
   }
 
-  toggleMenuItems = () => {
-    this.setState(prevState => ({showMenu: !prevState.showMenu}))
+  const toggleMenuItems = () => {
+    setShowMenu(prevShowMenu => !prevShowMenu)
   }
 
-  onChangeSearchInput = event => {
-    const {changeSearchInput} = this.props
+  const onChangeSearchInput = event => {
+    const {changeSearchInput} = props
     changeSearchInput(event.target.value)
   }
 
-  onKeyDownEnter = event => {
-    const {getSearchApiData} = this.props
+  const onKeyDownEnter = event => {
+    const {getSearchApiData} = props
     if (event.key === 'Enter') {
       getSearchApiData()
     }
   }
 
-  render() {
-    const {showMenu, currentPath} = this.state
-    const showInput = this.showSearchInput()
-    const homeClassName = currentPath === '/' ? 'selected' : null
-    const popularClassName = currentPath === '/popular' ? 'selected' : null
-    const accountClassName = currentPath === '/account' ? 'selected' : null
-    return (
-      <nav>
-        <div className="navbar">
-          <div className="navbar-logo-link-container">
-            <Link to="/">
-              <img
-                src="https://res.cloudinary.com/dc2b69ycq/image/upload/v1669787785/Movies%20App/Movies_Logo_nu3gsl.png"
-                alt="website logo"
-                className="website-logo"
-              />
-            </Link>
+  console.log(showMenu)
+  const showInput = showSearchInput()
+  const homeClassName = currentPath === '/' ? 'selected' : null
+  const popularClassName = currentPath === '/popular' ? 'selected' : null
+  const accountClassName = currentPath === '/account' ? 'selected' : null
+  return (
+    <nav>
+      <div className="navbar">
+        <div className="navbar-logo-link-container">
+          <Link to="/">
+            <img
+              src="https://res.cloudinary.com/dc2b69ycq/image/upload/v1669787785/Movies%20App/Movies_Logo_nu3gsl.png"
+              alt="website logo"
+              className="website-logo"
+            />
+          </Link>
 
-            <ul className="header-link-container">
-              <Link to="/" className="route-link">
-                <li className={`header-link ${homeClassName}`}>Home</li>
-              </Link>
-              <Link to="/popular" className="route-link">
-                <li className={`header-link ${popularClassName}`}>Popular</li>
-              </Link>
-            </ul>
-          </div>
-          <div className="search-and-avatar">
-            <div className="search-container">
-              {showInput && (
-                <input
-                  type="search"
-                  className="search-input"
-                  onChange={this.onChangeSearchInput}
-                  onKeyDown={this.onKeyDownEnter}
-                />
-              )}
-              <Link to="/search">
-                <button
-                  type="button"
-                  className="search-button"
-                  onClick={this.onShowSearchInput}
-                  testid="searchButton"
-                >
-                  <HiOutlineSearch size={18} color="#ffffff" />
-                </button>
-              </Link>
-            </div>
-            <Link to="/account">
-              <img
-                src="https://res.cloudinary.com/dc2b69ycq/image/upload/v1669785109/Movies%20App/Vector_Avatar1_hiwft7.png"
-                alt="profile"
-                className="avatar-image"
-              />
-            </Link>
-            <button
-              type="button"
-              className="menu-button"
-              onClick={this.toggleMenuItems}
-            >
-              <MdMenuOpen />
-            </button>
-          </div>
-        </div>
-
-        {showMenu && (
-          <ul className="menu-link-container">
+          <ul className="header-link-container">
             <Link to="/" className="route-link">
-              <li className={`menu-link ${homeClassName}`}>Home</li>
+              <li className={`header-link ${homeClassName}`}>Home</li>
             </Link>
             <Link to="/popular" className="route-link">
-              <li className={`menu-link ${popularClassName}`}>Popular</li>
+              <li className={`header-link ${popularClassName}`}>Popular</li>
             </Link>
-            <Link to="/account" className="route-link">
-              <li className={`menu-link ${accountClassName}`}>Account</li>
+            <Link to="/mylist" className="route-link">
+              <li className={`header-link ${popularClassName}`}>My List</li>
             </Link>
-            <li>
+            <Link to="/popular" className="route-link">
+              <li className={`header-link ${popularClassName}`}>
+                <select className="select-options" name="Genre">
+                  <option className="genre-option">Genre</option>
+                  <option className="genre-option">Action</option>
+                  <option className="genre-option">Sci-Fi</option>
+                  <option className="genre-option">Adventure</option>
+                  <option className="genre-option">Drama</option>
+                  <option className="genre-option">Thriller</option>
+                </select>
+              </li>
+            </Link>
+          </ul>
+        </div>
+        <div className="search-and-avatar">
+          <div className="search-container">
+            {showInput && (
+              <input
+                type="search"
+                className="search-input"
+                onChange={onChangeSearchInput}
+                onKeyDown={onKeyDownEnter}
+              />
+            )}
+            <Link to="/search">
               <button
                 type="button"
-                className="close-button"
-                onClick={this.toggleMenuItems}
+                className="search-button"
+                onClick={onShowSearchInput}
+                testid="searchButton"
               >
-                <AiFillCloseCircle />
+                <HiOutlineSearch size={18} color="#ffffff" />
               </button>
-            </li>
-          </ul>
-        )}
-      </nav>
-    )
-  }
+            </Link>
+          </div>
+          <Link to="/account">
+            <img
+              src="https://res.cloudinary.com/dc2b69ycq/image/upload/v1669785109/Movies%20App/Vector_Avatar1_hiwft7.png"
+              alt="profile"
+              className="avatar-image"
+            />
+          </Link>
+          <button
+            type="button"
+            className="menu-buttons"
+            onClick={toggleMenuItems}
+          >
+            <MdOutlineKeyboardArrowDown className="arrow-down" />
+          </button>
+        </div>
+      </div>
+      {showMenu ? (
+        <ul className="menu-link-container">
+          <Link to="/" className="route-link home">
+            <li className={`menu-link  ${homeClassName} home`}>Home</li>
+          </Link>
+          <Link to="/popular" className="route-link">
+            <li className={`menu-link ${popularClassName} popular`}>Popular</li>
+          </Link>
+          <Link to="/mylist" className="route-link">
+            <li className={`menu-link ${accountClassName} mylist`}>MyList</li>
+          </Link>
+          <Link to="/account" className="route-link">
+            <li className={`menu-link ${accountClassName}`}>Account</li>
+          </Link>
+          <li>
+            <button type="button" className="logout-button" onClick={logout}>
+              Logout
+            </button>
+          </li>
+        </ul>
+      ) : (
+        ' '
+      )}
+    </nav>
+  )
 }
 
-export default Header
+export default withRouter(Header)

@@ -1,10 +1,13 @@
 import {Component} from 'react'
+import {BsPlayFill, BsPlusCircle} from 'react-icons/bs'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import format from 'date-fns/format'
 import Header from '../Header'
 import MovieItem from '../MovieItem/index'
 import FooterSection from '../FooterSection/index'
+// import ListItem from '../ListItem'
+import ListContext from '../../context/ListContext'
 import './index.css'
 
 const apiStatusConstants = {
@@ -119,92 +122,133 @@ class MovieDetailSection extends Component {
     const {movieDetailData} = this.state
     const {releaseDate} = movieDetailData
     if (releaseDate !== undefined) {
+      console.log(format(new Date(releaseDate), 'do MMMM yyyy'))
       return format(new Date(releaseDate), 'do MMMM yyyy')
     }
     return null
   }
 
-  renderSuccessView = () => {
-    const {
-      movieDetailData,
-      similarMovieDetailData,
-      genresDetailData,
-      spokenLanguageDetailData,
-    } = this.state
+  onClickList = () => {}
 
-    const censorRating = movieDetailData.adult ? 'A' : 'U/A'
+  renderSuccessView = () => (
+    <ListContext.Consumer>
+      {value => {
+        const {
+          movieDetailData,
+          similarMovieDetailData,
+          genresDetailData,
+          spokenLanguageDetailData,
+        } = this.state
 
-    return (
-      <div className="movie-detail-bg-container">
-        <div
-          style={{backgroundImage: `url(${movieDetailData.backdropPath})`}}
-          className="bg-image"
-        >
-          <Header />
-          <div className="movie-heading-container">
-            <h1 className="poster-title">{movieDetailData.title}</h1>
-            <div className="time-year-container">
-              <p className="year-time">{this.runtime()}</p>
-              <p className="censor-criteria">{censorRating}</p>
-              <p className="year-time">{this.releasedYear()}</p>
+        const {addList, myList} = value
+
+        const onClickList = () => {
+          const {match} = this.props
+          const {params} = match
+          const {id} = params
+          const List = {
+            id,
+            posterPath: movieDetailData.backdropPath,
+            title: movieDetailData.title,
+          }
+          console.log(myList)
+          const filteredId = myList.filter(item => {
+            if (item.id === id) {
+              return null
+            }
+            return item
+          })
+          const selectedList = [...filteredId, List]
+          addList(selectedList)
+        }
+
+        const censorRating = movieDetailData.adult ? 'A' : 'U/A'
+
+        return (
+          <div className="movie-detail-bg-container">
+            <div
+              style={{backgroundImage: `url(${movieDetailData.backdropPath})`}}
+              className="bg-image"
+            >
+              <Header />
+              <div className="movie-heading-container">
+                <h1 className="poster-title">{movieDetailData.title}</h1>
+                <div className="time-year-container">
+                  <p className="year-time">{this.runtime()}</p>
+                  <p className="censor-criteria">{censorRating}</p>
+                  <p className="year-time">{this.releasedYear()}</p>
+                </div>
+                <p className="poster-description">{movieDetailData.overview}</p>
+                <div className="play-list-container">
+                  <button type="button" className="play-button">
+                    <BsPlayFill size={26} />
+                    <span>Play</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="list-button"
+                    onClick={onClickList}
+                  >
+                    <BsPlusCircle size={26} />
+                  </button>
+                </div>
+              </div>
             </div>
-            <p className="poster-description">{movieDetailData.overview}</p>
-            <button type="button" className="play-button">
-              Play
-            </button>
-          </div>
-        </div>
-        <hr />
-        <div className="movie-detail-flex-container">
-          <div className="movie-content-details">
-            <h1 className="movie-content-title">Genres</h1>
+            <hr className="hr-line" />
+            <div className="movie-detail-flex-container">
+              <div className="movie-content-details">
+                <h1 className="movie-content-title">Genres</h1>
 
-            {genresDetailData.map(eachData => (
-              <p className="movie-content-description" key={eachData.id}>
-                {eachData.name}
-              </p>
-            ))}
-          </div>
-          <div className="movie-content-details">
-            <h1 className="movie-content-title">Audio Available</h1>
+                {genresDetailData.map(eachData => (
+                  <p className="movie-content-description" key={eachData.id}>
+                    {eachData.name}
+                  </p>
+                ))}
+              </div>
+              <div className="movie-content-details">
+                <h1 className="movie-content-title">Audio Available</h1>
 
-            {spokenLanguageDetailData.map(eachData => (
-              <p className="movie-content-description" key={eachData.id}>
-                {eachData.englishName}
-              </p>
-            ))}
-          </div>
+                {spokenLanguageDetailData.map(eachData => (
+                  <p className="movie-content-description" key={eachData.id}>
+                    {eachData.englishName}
+                  </p>
+                ))}
+              </div>
 
-          <div className="movie-content-details">
-            <h1 className="movie-content-title">Rating Count</h1>
-            <p className="movie-content-description">
-              {movieDetailData.voteCount}
-            </p>
-            <h1 className="movie-content-title">Rating Average</h1>
-            <p className="movie-content-description">
-              {movieDetailData.voteAverage}
-            </p>
-          </div>
-          <div className="movie-content-details">
-            <h1 className="movie-content-title">Budget</h1>
-            <p className="movie-content-description">
-              {movieDetailData.budget}
-            </p>
-            <h1 className="movie-content-title">Release Date</h1>
-            <p className="movie-content-description">{this.formattedDate()}</p>
-          </div>
-        </div>
-        <h1 className="more-movies-title">More like this</h1>
-        <ul className="more-movies-container">
-          {similarMovieDetailData.map(eachData => (
-            <MovieItem movieData={eachData} key={eachData.id} />
-          ))}
-        </ul>
+              <div className="movie-content-details">
+                <h1 className="movie-content-title">Rating Count</h1>
+                <p className="movie-content-description">
+                  {movieDetailData.voteCount}
+                </p>
+                <h1 className="movie-content-title">Rating Average</h1>
+                <p className="movie-content-description">
+                  {movieDetailData.voteAverage}
+                </p>
+              </div>
+              <div className="movie-content-details">
+                <h1 className="movie-content-title">Budget</h1>
+                <p className="movie-content-description">
+                  {movieDetailData.budget}
+                </p>
+                <h1 className="movie-content-title">Release Date</h1>
+                <p className="movie-content-description">
+                  {this.formattedDate()}
+                </p>
+              </div>
+            </div>
+            <h1 className="more-movies-title">More like this</h1>
+            <ul className="more-movies-container">
+              {similarMovieDetailData.map(eachData => (
+                <MovieItem movieData={eachData} key={eachData.id} />
+              ))}
+            </ul>
 
-        <FooterSection />
-      </div>
-    )
-  }
+            <FooterSection />
+          </div>
+        )
+      }}
+    </ListContext.Consumer>
+  )
 
   renderLoadingView = () => (
     <div className="movie-detail-loader-container" testid="loader">
